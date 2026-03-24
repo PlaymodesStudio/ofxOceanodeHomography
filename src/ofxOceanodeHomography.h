@@ -10,10 +10,12 @@
 
 #include "cornerPin.h"
 #include "ROI_Warp.h"
+#include "ROIWarpGuiDisplay.h"
 
 namespace ofxOceanodeHomography {
     static void registerCollection(ofxOceanode& oceanode) {
         oceanode.registerModel<cornerPin>();
         oceanode.registerModel<ROI_Warp>();
+        oceanode.registerModel<ROIWarpGuiDisplay>();
     }
 }
