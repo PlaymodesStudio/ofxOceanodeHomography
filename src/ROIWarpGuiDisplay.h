@@ -18,16 +18,7 @@ public:
     ROIWarpGuiDisplay() : ofxOceanodeNodeModel("ROI Warp Display"){}
 
     void setup() override {
-        // NoGuiWidget: keeps the port pin for canvas connections, hides the text widget
-        addParameter(input.set("Input",   nullptr), ofxOceanodeParameterFlags_NoGuiWidget);
-        addParameter(width.set("Width",   1920, 1, INT_MAX), ofxOceanodeParameterFlags_NoGuiWidget);
-        addParameter(height.set("Height", 1080, 1, INT_MAX), ofxOceanodeParameterFlags_NoGuiWidget);
-        addOutputParameter(output.set("Output", nullptr), ofxOceanodeParameterFlags_NoGuiWidget);
-
         setFlags(ofxOceanodeNodeModelFlags_TransparentNode);
-
-        // Fixed preview width in the inspector (mirrors textureDisplay pattern)
-        addInspectorParameter(previewWidth.set("Preview Width", 400.f, 50.f, 1920.f));
 
         inputWidth  = 0;
         inputHeight = 0;
@@ -39,11 +30,19 @@ public:
         warpPoints[2] = glm::vec2(1, 1);
         warpPoints[3] = glm::vec2(0, 1);
 
-        listeners.push(width.newListener([this](int &){ recomputeMesh(); }));
-        listeners.push(height.newListener([this](int &){ recomputeMesh(); }));
-
+        // Canvas first — appears at the top of the inspector
+        addInspectorParameter(previewWidth.set("Preview Width", 400.f, 50.f, 1920.f));
         addCustomRegion(displayRegion.set("Display", [this](){ drawDisplay(); }),
                         [this](){ drawDisplay(); });
+
+        // Portal-bindable parameters appear below the canvas
+        addParameter(input.set("Input",   nullptr));
+        addParameter(width.set("Width",   1920, 1, INT_MAX));
+        addParameter(height.set("Height", 1080, 1, INT_MAX));
+        addOutputParameter(output.set("Output", nullptr));
+
+        listeners.push(width.newListener([this](int &){ recomputeMesh(); }));
+        listeners.push(height.newListener([this](int &){ recomputeMesh(); }));
     }
 
     void draw(ofEventArgs &) override {
