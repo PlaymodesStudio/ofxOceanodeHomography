@@ -127,6 +127,18 @@ public:
         }
     }
 
+    void presetSave(ofJson &json) override {
+        json["inputPortalName"]  = selectedInputPortal  ? selectedInputPortal->getName()  : "";
+        json["outputPortalName"] = selectedOutputPortal ? selectedOutputPortal->getName() : "";
+    }
+
+    void presetRecallBeforeSettingParameters(ofJson &json) override {
+        if(json.contains("inputPortalName")  && json["inputPortalName"].is_string())
+            selectedInputPortalName.set(json["inputPortalName"].get<string>());
+        if(json.contains("outputPortalName") && json["outputPortalName"].is_string())
+            selectedOutputPortalName.set(json["outputPortalName"].get<string>());
+    }
+
     void presetRecallAfterSettingParameters(ofJson &) override {
         needsDelayedRestore = true;
     }
