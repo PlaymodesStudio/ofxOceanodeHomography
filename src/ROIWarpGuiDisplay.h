@@ -18,12 +18,16 @@ public:
     ROIWarpGuiDisplay() : ofxOceanodeNodeModel("ROI Warp Display"){}
 
     void setup() override {
-        addParameter(input.set("Input", nullptr));
-        addParameter(width.set("Width", 1920, 1, INT_MAX));
-        addParameter(height.set("Height", 1080, 1, INT_MAX));
-        addOutputParameter(output.set("Output", nullptr));
+        // NoGuiWidget: keeps the port pin for canvas connections, hides the text widget
+        addParameter(input.set("Input",   nullptr), ofxOceanodeParameterFlags_NoGuiWidget);
+        addParameter(width.set("Width",   1920, 1, INT_MAX), ofxOceanodeParameterFlags_NoGuiWidget);
+        addParameter(height.set("Height", 1080, 1, INT_MAX), ofxOceanodeParameterFlags_NoGuiWidget);
+        addOutputParameter(output.set("Output", nullptr), ofxOceanodeParameterFlags_NoGuiWidget);
 
         setFlags(ofxOceanodeNodeModelFlags_TransparentNode);
+
+        // Fixed preview width in the inspector (mirrors textureDisplay pattern)
+        addInspectorParameter(previewWidth.set("Preview Width", 400.f, 50.f, 1920.f));
 
         inputWidth  = 0;
         inputHeight = 0;
@@ -108,10 +112,9 @@ private:
     // ---- Inspector canvas ----
 
     void drawDisplay() {
-        float aspect = (inputWidth > 0 && inputHeight > 0)
-                     ? (float)inputHeight / (float)inputWidth : 1.0f;
-
-        float canvasW = ImGui::GetContentRegionAvail().x;
+        float aspect  = (inputWidth > 0 && inputHeight > 0)
+                      ? (float)inputHeight / (float)inputWidth : 1.0f;
+        float canvasW = previewWidth.get();
         float canvasH = canvasW * aspect;
         if(canvasW <= 0 || canvasH <= 0) return;
 
@@ -244,6 +247,7 @@ private:
     ofParameter<ofTexture*> output;
     ofParameter<int>        width;
     ofParameter<int>        height;
+    ofParameter<float>      previewWidth;
 
     // ---- State ----
     float  inputWidth, inputHeight;
